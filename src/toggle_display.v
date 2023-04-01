@@ -19,12 +19,13 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module toggle_display(input clk, input [4:0] sw, input [12:0] pixel_index, output reg [15:0] oled_data = 0);
+module toggle_display(input start, input clk, input [4:0] sw, input [12:0] pixel_index, output reg [15:0] oled_data = 0);
     wire [12:0] x_index; wire [12:0] y_index;
     assign x_index = pixel_index % 96;
     assign y_index = pixel_index / 96;
    
     always @(posedge clk) begin
+        if (start) begin
         //display green border
         if (~sw[4] & ((x_index >= 57 & x_index <= 59 & y_index <= 59) | (y_index >= 57 & y_index <= 59 & x_index <= 59))) begin
             oled_data <= 16'h07E0;
@@ -55,7 +56,7 @@ module toggle_display(input clk, input [4:0] sw, input [12:0] pixel_index, outpu
                 oled_data <= 16'hFFFF;
             end
         end
-        
+        end
     end
 endmodule
 

@@ -21,7 +21,7 @@
 
 module Volume_LED_controller(
     input [3:0] volume, basys_clock,
-    output reg [9:0]led, 
+    output reg [9:0] led, 
     output [6:0] seg2
     );
 

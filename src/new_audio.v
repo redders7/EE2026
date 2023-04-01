@@ -22,6 +22,7 @@
 
 module new_audio(
     input basys_clock,
+    input isPiano,
     input is_play_audio,
     input [4:0] isValidNumber,
     input [20:0] frequency_count,
@@ -44,12 +45,12 @@ module new_audio(
 //    clk_divider(.CLOCK(basys_clock),.m(49999999), .a(clk1));
 
     always @ (posedge basys_clock) begin
-        if (is_play_audio == 0)
+        if (is_play_audio == 0 && isPiano == 0)
         begin
             count <= 0;
             audio_out <= 0;
         end
-        if (is_play_audio == 1)
+        if (is_play_audio == 1 && isPiano == 0)
         begin
             count <= (count == frequency_count) ? 0 : count + 1;
             audio_out <= (count == 0) ? (audio_out == max_volume) ? 0 : max_volume : audio_out;

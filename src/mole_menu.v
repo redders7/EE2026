@@ -27,7 +27,9 @@ module mole_menu(
     input btnD,
     input left,
     input right,
-    input sw12, 
+    input sw12, sw12off,
+    input mole_start, 
+    input [3:0] displayState,
     input [15:0] sw, 
     input [11:0] xpos,
     input [11:0] ypos,
@@ -57,7 +59,6 @@ module mole_menu(
     parameter GAME_LENGTH = 121; //30s game over
     reg [4:0] moles;
     reg [7:0] score;
-    wire [7:0] trueHigh;
     reg [7:0] highscore;
     reg [7:0] timer;
     reg [7:0] mole_timer;
@@ -67,14 +68,7 @@ module mole_menu(
     reg next_type;
     wire [7:0] difficulty;
     assign difficulty = (sw[14]) ? HARD : (sw[13]) ? MEDIUM : EASY;
-    
-    // Read highscore from BRAM
-    wire [7:0] highscore_read;
-    wire write;
-    reg newHighScore;
-    assign write = newHighScore; 
-    BRAM_Highscore high(clk, highscore,write,0,highscore, highscore_read);
-    assign trueHigh = (highscore > highscore_read) ? highscore: highscore_read;
+
         
     // Game States
     parameter MENU = 2'd0;
@@ -169,7 +163,6 @@ module mole_menu(
     assign random_mole = (random * random2) % 5;
     assign random_type = (random * random2) % 2;
 
-    
     // Initialise to Game Menu
     initial begin
         game_state <= MENU;
@@ -180,9 +173,15 @@ module mole_menu(
     reg clicked = 0;
     reg right_clicked = 0;
     modified_clk_divider gamelogic(.clk(clk), .m(24999999), .a(twohz));
+    reg rst = 0;
+    
     // Timer and Game State Logic
     always @ (posedge clk) begin
-        if (sw12) begin
+        if (mole_start && !rst) begin
+            game_state <= MENU;
+            rst <= 1;
+        end
+        if (sw12 || sw12off) begin
             game_state <= MENU;
         end
         if (left) clicked <= 1;
@@ -195,7 +194,6 @@ module mole_menu(
                         timer <= 13;
                         game_state <= SETUP;
                         clicked <= 0;
-                        newHighScore <= 0;
                     end
                 end        
             end
@@ -279,7 +277,6 @@ module mole_menu(
             END: begin
                 if (score > highscore) begin
                     highscore <= score;
-                    newHighScore <= 1;
                 end
                 if (clicked | right_clicked) begin
                     game_state <= MENU;
@@ -375,8 +372,8 @@ module mole_menu(
     // Set anode and digit to display
     always @ (*) begin
         timer_seconds <= timer/4;
-        hiscore1 <= trueHigh/10;
-        hiscore0 <= trueHigh % 10;
+        hiscore1 <= highscore/10;
+        hiscore0 <= highscore % 10;
         score1 <= score / 10;
         score0 <= score % 10;
         timer1 <= timer_seconds / 10;
