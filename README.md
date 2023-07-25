@@ -3,5 +3,5 @@ The EE2026 Project is multi-application project built with Verilog using the Dig
 
 Applications: W-A-M! (Whack-A-Mole), Image Filtering, Linear Regression Line Plotter, Volume Regulator, Music Player
 
-Project Members: Ong Shao Yong, Wang Tingjia, Cleon Liew and Sweeram.
+Project Members: Ong Shao Yong, Wang Tingjia, Cleon Liew and Sriram.
 
